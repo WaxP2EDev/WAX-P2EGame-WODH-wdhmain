@@ -1,0 +1,33 @@
+name: Deployment
+on:
+  push:
+    branches: [main, develop, 'feature/**']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ubuntu-1804-build:
+    name: Ubuntu 18.04 | Build
+    runs-on: ubuntu-18.04
+    timeout-minutes: 15
+    container: 
+      image: avm007/eosio.cdt:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2   
+
+      - name: Build
+        run: |
+          chmod +x build.sh
+          ./build.sh -e /root/eosio/2.0 -c /usr/opt/eosio.cdt
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ubuntu-1804-build
+          path: |
+            build/Release/*/*.abi
+            build/Release/*/*.wasm
+
+    
